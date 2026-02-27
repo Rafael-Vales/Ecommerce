@@ -40,9 +40,35 @@ function getMercadoPagoApiBaseUrl() {
   return process.env.MERCADOPAGO_API_BASE_URL || MERCADOPAGO_API_BASE_URL;
 }
 
+function normalizePublicBaseUrl(value: string) {
+  const trimmed = value.trim().replace(/\/+$/, "");
+
+  if (!trimmed) {
+    return "";
+  }
+
+  if (/^https?:\/\//i.test(trimmed)) {
+    return trimmed;
+  }
+
+  return `https://${trimmed}`;
+}
+
 function getMercadoPagoBaseUrl() {
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
-  return baseUrl.replace(/\/+$/, "");
+  const explicitUrl = process.env.NEXT_PUBLIC_SITE_URL;
+
+  if (explicitUrl?.trim()) {
+    return normalizePublicBaseUrl(explicitUrl);
+  }
+
+  const vercelUrl =
+    process.env.VERCEL_PROJECT_PRODUCTION_URL || process.env.VERCEL_URL;
+
+  if (vercelUrl?.trim()) {
+    return normalizePublicBaseUrl(vercelUrl);
+  }
+
+  return "http://localhost:3000";
 }
 
 function createMercadoPagoClients() {

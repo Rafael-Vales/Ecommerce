@@ -1,5 +1,10 @@
 import { z } from "zod";
 
+export const checkoutPaymentMethodSchema = z.enum([
+  "MERCADO_PAGO",
+  "CASH_PICKUP",
+]);
+
 export const checkoutItemSchema = z.object({
   productId: z.string().trim().min(1, "productId es requerido"),
   variantId: z.string().trim().min(1).optional(),
@@ -19,6 +24,7 @@ export const checkoutCustomerSchema = z.object({
 export const checkoutRequestSchema = z.object({
   tenantSlug: z.string().trim().min(1).optional(),
   customer: checkoutCustomerSchema,
+  paymentMethod: checkoutPaymentMethodSchema.default("MERCADO_PAGO"),
   notes: z.string().trim().max(500).optional(),
   items: z.array(checkoutItemSchema).min(1, "Debe enviar al menos un item").max(100),
 });

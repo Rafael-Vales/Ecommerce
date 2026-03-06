@@ -9,9 +9,10 @@ import {
 	Plus,
 	ChevronLeft,
 	CreditCard,
+	HandCoins,
 	MapPin,
+	Store,
 	User,
-	Check,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -25,6 +26,9 @@ import type { Product } from "@/src/types/product";
 export default function CarritoPage() {
 	const [step, setStep] = useState<1 | 2 | 3 | 4>(1);
 	const [recommendedProducts, setRecommendedProducts] = useState<Product[]>([]);
+	const [paymentMethod, setPaymentMethod] = useState<
+		"MERCADO_PAGO" | "CASH_PICKUP"
+	>("MERCADO_PAGO");
 
 	const titles = {
 		1: "Tu Carrito",
@@ -49,7 +53,10 @@ export default function CarritoPage() {
 		};
 	}, []);
 
-	async function handleCheckout(cartItems: any[]) {
+	async function handleCheckout(
+		cartItems: any[],
+		selectedPaymentMethod: "MERCADO_PAGO" | "CASH_PICKUP"
+	) {
 		try {
 			if (cartItems.length === 0) {
 				toast.error("El carrito está vacío");
@@ -67,32 +74,50 @@ export default function CarritoPage() {
 					"Content-Type": "application/json",
 					"Idempotency-Key": idempotencyKey,
 				},
-				body: JSON.stringify({
-					customer: {
-						email: "test_user_351831898137148704@testuser.com",
-					},
-					items: cartItems.map((item) => ({
-						productId: item.productId,
-						variantId: item.id,
-						quantity: item.quantity,
+					body: JSON.stringify({
+						customer: {
+							email: "test_user_351831898137148704@testuser.com",
+						},
+						paymentMethod: selectedPaymentMethod,
+						items: cartItems.map((item) => ({
+							productId: item.productId,
+							variantId: item.id,
+							quantity: item.quantity,
 					})),
 				}),
 			});
 
 			const data = await res.json();
 
-			const checkoutUrl = data?.payment?.checkoutUrl;
+				if (!res.ok) {
+					throw new Error(data?.message || "No se pudo generar la preferencia");
+				}
 
-			if (!res.ok || !checkoutUrl) {
-				throw new Error(data?.message || "No se pudo generar la preferencia");
+				if (selectedPaymentMethod === "CASH_PICKUP") {
+					const orderId = data?.orderId;
+
+					if (!orderId) {
+						throw new Error("No se pudo confirmar el pedido en efectivo");
+					}
+
+					window.location.href = `/pago/cash?orderId=${encodeURIComponent(
+						orderId
+					)}`;
+					return;
+				}
+
+				const checkoutUrl = data?.payment?.checkoutUrl;
+
+				if (!checkoutUrl) {
+					throw new Error("No se pudo generar la preferencia");
+				}
+
+				window.location.href = checkoutUrl;
+			} catch (error) {
+				console.error(error);
+				toast.error("Error al iniciar el checkout");
 			}
-
-			window.location.href = checkoutUrl;
-		} catch (error) {
-			console.error(error);
-			toast.error("Error al iniciar el pago con Mercado Pago");
 		}
-	}
 
 	return (
 		<div className="min-h-screen bg-gray-50 py-10">
@@ -126,7 +151,12 @@ export default function CarritoPage() {
 						{step === 1 && <Step1Cart items={cartItems} />}
 						{step === 2 && <Step2Info />}
 						{step === 3 && <Step3Shipping />}
-						{step === 4 && <Step4Payment />}
+							{step === 4 && (
+								<Step4Payment
+									paymentMethod={paymentMethod}
+									onChange={setPaymentMethod}
+								/>
+							)}
 
 						{step > 1 && (
 							<div className="flex justify-end pt-4">
@@ -134,17 +164,24 @@ export default function CarritoPage() {
 									className="bg-[#0B1D4C] hover:bg-[#152c69] text-white h-12 px-8 rounded-lg w-full sm:w-auto"
 									onClick={() =>
 										step < 4
-											? setStep(
-													(prev) => (prev + 1) as any
-											  )
-											: handleCheckout(cartItems)
-									}>
-									{step === 4
-										? "Finalizar Compra"
-										: step === 3
-										? "Pagar"
-										: "Ir al Envio"}
-								</Button>
+												? setStep(
+														(prev) => (prev + 1) as any
+												  )
+												: handleCheckout(
+														cartItems,
+														paymentMethod
+												  )
+										}>
+										{step === 4 ? (
+											paymentMethod === "CASH_PICKUP" ? (
+												"Confirmar Pedido"
+											) : (
+												"Pagar con Mercado Pago"
+											)
+										) : step === 3
+											? "Pagar"
+											: "Ir al Envio"}
+									</Button>
 							</div>
 						)}
 					</div>
@@ -390,16 +427,64 @@ function Step3Shipping() {
 	);
 }
 
-function Step4Payment() {
+function Step4Payment({
+	paymentMethod,
+	onChange,
+}: {
+	paymentMethod: "MERCADO_PAGO" | "CASH_PICKUP";
+	onChange: (value: "MERCADO_PAGO" | "CASH_PICKUP") => void;
+}) {
 	return (
-		<div className="bg-white p-6 sm:p-8 rounded-2xl shadow-sm border border-gray-100">
-			<h3 className="text-lg font-bold text-[#0B1D4C] mb-2">
-				Pago con Mercado Pago
+		<div className="bg-white p-6 sm:p-8 rounded-2xl shadow-sm border border-gray-100 space-y-4">
+			<h3 className="text-lg font-bold text-[#0B1D4C]">
+				Seleccioná cómo querés pagar
 			</h3>
-			<p className="text-sm text-gray-600">
-				Al finalizar la compra, serás redirigido a Mercado Pago para
-				completar el pago de forma segura.
-			</p>
+
+			<button
+				type="button"
+				onClick={() => onChange("MERCADO_PAGO")}
+				className={`w-full text-left p-4 rounded-xl border transition ${
+					paymentMethod === "MERCADO_PAGO"
+						? "border-[#F32947] bg-red-50"
+						: "border-gray-200 hover:border-[#F32947]"
+				}`}>
+				<div className="flex items-start gap-3">
+					<CreditCard className="w-5 h-5 mt-0.5 text-[#0B1D4C]" />
+					<div>
+						<p className="font-semibold text-[#0B1D4C]">
+							Mercado Pago
+						</p>
+						<p className="text-sm text-gray-600">
+							Pagás online y te redirigimos al checkout seguro.
+						</p>
+					</div>
+				</div>
+			</button>
+
+			<button
+				type="button"
+				onClick={() => onChange("CASH_PICKUP")}
+				className={`w-full text-left p-4 rounded-xl border transition ${
+					paymentMethod === "CASH_PICKUP"
+						? "border-[#F32947] bg-red-50"
+						: "border-gray-200 hover:border-[#F32947]"
+				}`}>
+				<div className="flex items-start gap-3">
+					<HandCoins className="w-5 h-5 mt-0.5 text-[#0B1D4C]" />
+					<div>
+						<p className="font-semibold text-[#0B1D4C]">
+							Efectivo (retiro en local)
+						</p>
+						<p className="text-sm text-gray-600">
+							Confirmás el pedido ahora y abonás en el local al retirar.
+						</p>
+						<div className="mt-1 inline-flex items-center gap-1 text-xs text-gray-500">
+							<Store className="w-3.5 h-3.5" />
+							Retiro en sucursal
+						</div>
+					</div>
+				</div>
+			</button>
 		</div>
 	);
 }

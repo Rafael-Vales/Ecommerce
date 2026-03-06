@@ -15,6 +15,8 @@ import {
   type PublicCheckoutStatus,
 } from "@/src/server/checkout/status";
 
+const CASH_PICKUP_PROVIDER = "cash_pickup";
+
 export class CheckoutServiceError extends Error {
   status: number;
   code: string;
@@ -287,6 +289,10 @@ async function ensureMercadoPagoPreference(input: {
   payment: Payment;
   idempotencyKey?: string;
 }) {
+  if (input.payment.provider !== PAYMENT_PROVIDER) {
+    return input.payment;
+  }
+
   const currentUrl = extractCheckoutUrl(input.payment.rawPayload);
 
   if (input.payment.providerPreferenceId && currentUrl) {
@@ -374,7 +380,7 @@ async function buildResponseFromExistingOrder(input: {
 
   let payment = existingOrder.payments[0] || null;
 
-  if (payment) {
+  if (payment?.provider === PAYMENT_PROVIDER) {
     payment = await ensureMercadoPagoPreference({
       tenant: input.tenant,
       tenantSlug: input.tenantSlug,
@@ -446,6 +452,8 @@ export async function createCheckoutIntent(input: {
 
   const preparedItems = await resolveCheckoutItems(tenant.id, input.payload.items);
   const subtotalInCents = preparedItems.reduce((sum, item) => sum + item.lineTotalInCents, 0);
+  const isCashPickup = input.payload.paymentMethod === "CASH_PICKUP";
+  const paymentProvider = isCashPickup ? CASH_PICKUP_PROVIDER : PAYMENT_PROVIDER;
 
   let createdOrder: OrderWithRelations;
   let createdPayment: Payment;
@@ -497,7 +505,7 @@ export async function createCheckoutIntent(input: {
         data: {
           tenantId: tenant.id,
           orderId: order.id,
-          provider: PAYMENT_PROVIDER,
+          provider: paymentProvider,
           status: "PENDING",
           amountInCents: order.totalInCents,
           currencyCode: order.currencyCode,
@@ -505,16 +513,18 @@ export async function createCheckoutIntent(input: {
         },
       });
 
-      await enqueueReconciliationJob(
-        {
-          tenantId: tenant.id,
-          paymentId: payment.id,
-          orderId: order.id,
-          externalReference: order.id,
-          nextRetryAt: computeNextRetryAt(1),
-        },
-        tx
-      );
+      if (paymentProvider === PAYMENT_PROVIDER) {
+        await enqueueReconciliationJob(
+          {
+            tenantId: tenant.id,
+            paymentId: payment.id,
+            orderId: order.id,
+            externalReference: order.id,
+            nextRetryAt: computeNextRetryAt(1),
+          },
+          tx
+        );
+      }
 
       if (input.idempotencyKey) {
         await tx.idempotencyKey.create({
@@ -569,6 +579,10 @@ export async function createCheckoutIntent(input: {
     }
 
     throw error;
+  }
+
+  if (createdPayment.provider !== PAYMENT_PROVIDER) {
+    return mapOrderToCheckoutResponse(createdOrder, createdPayment, false);
   }
 
   const payment = await ensureMercadoPagoPreference({

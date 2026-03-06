@@ -1,0 +1,15 @@
+{
+  "request1": {
+    "status": 500,
+    "body": {
+      "error": "webhook processing failed"
+    }
+  },
+  "request2": {
+    "status": 200,
+    "body": {
+      "received": true,
+      "duplicate": true
+    }
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "tenantSlug": "rafa-petshop",
+  "customer": {
+    "email": "test_user_351831898137148704@testuser.com"
+  },
+  "items": [
+    {
+      "productId": "7",
+      "variantId": "7-3",
+      "quantity": 1,
+      "price": 1,
+      "title": "HACKED"
+    }
+  ],
+  "total": 1,
+  "price": 1
+}

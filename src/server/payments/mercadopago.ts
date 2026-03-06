@@ -25,9 +25,23 @@ export interface CreatePreferenceOutput {
   rawResponse: unknown;
 }
 
+function stripWrappingQuotes(value: string) {
+  const trimmed = value.trim();
+
+  if (
+    (trimmed.startsWith("\"") && trimmed.endsWith("\"")) ||
+    (trimmed.startsWith("'") && trimmed.endsWith("'"))
+  ) {
+    return trimmed.slice(1, -1).trim();
+  }
+
+  return trimmed;
+}
+
 function getMercadoPagoAccessToken() {
-  const token =
-    process.env.MERCADOPAGO_ACCESS_TOKEN || process.env.MP_ACCESS_TOKEN;
+  const token = stripWrappingQuotes(
+    process.env.MERCADOPAGO_ACCESS_TOKEN || process.env.MP_ACCESS_TOKEN || ""
+  );
 
   if (!token) {
     throw new Error("MERCADOPAGO_ACCESS_TOKEN no configurado");
@@ -37,11 +51,14 @@ function getMercadoPagoAccessToken() {
 }
 
 function getMercadoPagoApiBaseUrl() {
-  return process.env.MERCADOPAGO_API_BASE_URL || MERCADOPAGO_API_BASE_URL;
+  const configured = stripWrappingQuotes(
+    process.env.MERCADOPAGO_API_BASE_URL || ""
+  );
+  return configured || MERCADOPAGO_API_BASE_URL;
 }
 
 function normalizePublicBaseUrl(value: string) {
-  const trimmed = value.trim().replace(/\/+$/, "");
+  const trimmed = stripWrappingQuotes(value).replace(/\/+$/, "");
 
   if (!trimmed) {
     return "";
@@ -54,11 +71,28 @@ function normalizePublicBaseUrl(value: string) {
   return `https://${trimmed}`;
 }
 
+function isLocalhostUrl(value: string) {
+  try {
+    const url = new URL(value);
+    const host = url.hostname.toLowerCase();
+    return host === "localhost" || host === "127.0.0.1" || host === "::1";
+  } catch {
+    return false;
+  }
+}
+
 function getMercadoPagoBaseUrl() {
   const explicitUrl = process.env.NEXT_PUBLIC_SITE_URL;
 
   if (explicitUrl?.trim()) {
-    return normalizePublicBaseUrl(explicitUrl);
+    const normalized = normalizePublicBaseUrl(explicitUrl);
+    const runningOnVercel = Boolean(
+      process.env.VERCEL_PROJECT_PRODUCTION_URL || process.env.VERCEL_URL
+    );
+
+    if (normalized && (!runningOnVercel || !isLocalhostUrl(normalized))) {
+      return normalized;
+    }
   }
 
   const vercelUrl =
@@ -105,6 +139,8 @@ export async function createMercadoPagoPreference(
         failure: `${siteUrl}/pago/failure?orderId=${encodeURIComponent(input.orderId)}`,
         pending: `${siteUrl}/pago/pending?orderId=${encodeURIComponent(input.orderId)}`,
       },
+      // Ensure Mercado Pago redirects automatically to the ecommerce after approved payments.
+      auto_return: "approved",
       metadata: {
         orderId: input.orderId,
         tenantSlug: input.tenantSlug,
@@ -209,7 +245,7 @@ export function verifyMercadoPagoWebhookSignature(input: {
   requestIdHeader: string | null;
   dataId: string | null;
 }): boolean {
-  const secret = process.env.MERCADOPAGO_WEBHOOK_SECRET;
+  const secret = stripWrappingQuotes(process.env.MERCADOPAGO_WEBHOOK_SECRET || "");
 
   if (!secret) {
     return false;

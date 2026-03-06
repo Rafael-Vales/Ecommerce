@@ -1,0 +1,6 @@
+{
+  "id": "evt-e2e-dup-001",
+  "type": "payment",
+  "action": "payment.updated",
+  "data": { "id": "mp-pay-e2e-001" }
+}

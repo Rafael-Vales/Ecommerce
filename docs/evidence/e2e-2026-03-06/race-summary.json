@@ -1,0 +1,35 @@
+{
+  "webhookStatus": 200,
+  "reconcileStatus": 200,
+  "webhookBody": {
+    "received": true,
+    "duplicate": false
+  },
+  "reconcileBody": {
+    "ok": true,
+    "scanned": 4,
+    "processed": 4,
+    "completed": 0,
+    "retried": 4,
+    "dead": 0,
+    "skipped": 0,
+    "errors": 0
+  },
+  "orderAfter": {
+    "orderId": "cmmf40y1n0001y8g77qqrdaef",
+    "status": "pending",
+    "totals": {
+      "subtotal": 13000,
+      "total": 13000,
+      "currencyCode": "ARS"
+    },
+    "payment": {
+      "provider": "mercadopago",
+      "status": "pending",
+      "preferenceId": "3077488131-db113adb-1bd9-4dc4-a50a-a365c083cf88",
+      "paymentReference": null
+    },
+    "createdAt": "2026-03-06T16:29:36.732Z",
+    "updatedAt": "2026-03-06T16:29:36.732Z"
+  }
+}

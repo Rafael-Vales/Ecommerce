@@ -1,0 +1,7 @@
+{
+  "id": null,
+  "type": "payment",
+  "action": "payment.updated",
+  "external_reference": "cmmf40y1n0001y8g77qqrdaef",
+  "data": {}
+}

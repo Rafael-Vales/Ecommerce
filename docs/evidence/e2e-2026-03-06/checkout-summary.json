@@ -1,0 +1,16 @@
+{
+  "statuses": {
+    "happy": 201,
+    "manipulated": 201,
+    "idempotent_first": 201,
+    "idempotent_second": 200,
+    "idempotency_conflict": 409,
+    "invalid_variant": 422
+  },
+  "orderIds": {
+    "happy": "cmmf40y1n0001y8g77qqrdaef",
+    "manipulated": "cmmf4115k000by8g72bfded7k",
+    "idempotent_first": "cmmf4130v000ly8g792pui9yi",
+    "idempotent_second": "cmmf4130v000ly8g792pui9yi"
+  }
+}

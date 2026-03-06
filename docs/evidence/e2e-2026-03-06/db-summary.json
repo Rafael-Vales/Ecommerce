@@ -1,0 +1,74 @@
+{
+  "happy": {
+    "orderId": "cmmf40y1n0001y8g77qqrdaef",
+    "status": "PENDING_PAYMENT",
+    "totalInCents": 1300000,
+    "subtotalInCents": 1300000,
+    "items": [
+      {
+        "variantId": "variant_7_3",
+        "qty": 1,
+        "unit": 1300000,
+        "line": 1300000,
+        "title": "Advance Gato Adulto",
+        "variant": "3 KG"
+      }
+    ],
+    "payment": [
+      {
+        "id": "cmmf40yfa0005y8g7vd3bkr0x",
+        "status": "PENDING",
+        "externalReference": "cmmf40y1n0001y8g77qqrdaef",
+        "providerPaymentId": null,
+        "providerPreferenceId": "3077488131-db113adb-1bd9-4dc4-a50a-a365c083cf88"
+      }
+    ],
+    "paymentEventsCount": 0,
+    "reconcileJobs": [
+      {
+        "id": "cmmf40yht0007y8g79wjlvmm4",
+        "status": "PENDING",
+        "attempt": 1,
+        "maxAttempts": 7,
+        "nextRetryAt": "2026-03-06T16:32:54.047Z",
+        "lastError": "provider payment not found",
+        "lastProviderStatus": null
+      }
+    ]
+  },
+  "manipulated": {
+    "orderId": "cmmf4115k000by8g72bfded7k",
+    "status": "PENDING_PAYMENT",
+    "totalInCents": 1300000,
+    "subtotalInCents": 1300000,
+    "items": [
+      {
+        "variantId": "variant_7_3",
+        "qty": 1,
+        "unit": 1300000,
+        "line": 1300000,
+        "title": "Advance Gato Adulto",
+        "variant": "3 KG"
+      }
+    ],
+    "payment": [
+      {
+        "id": "cmmf411ht000fy8g7dqt0qv1s",
+        "status": "PENDING",
+        "externalReference": "cmmf4115k000by8g72bfded7k"
+      }
+    ]
+  },
+  "idempotent": {
+    "orderId": "cmmf4130v000ly8g792pui9yi",
+    "idempotencyKeysCount": 1,
+    "keyHashes": [
+      {
+        "id": "cmmf413ia000ty8g7ae5b985s",
+        "key": "e2e-idemp-1772814582",
+        "requestHash": "bf1a2223a001756ca76e58be3b9e72d5dbbec74e3e8111e71dedfc18b2df5c39",
+        "responseStatus": 201
+      }
+    ]
+  }
+}

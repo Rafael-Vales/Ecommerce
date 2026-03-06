@@ -1,0 +1,35 @@
+{
+  "home": {
+    "status": 200,
+    "size": 147059
+  },
+  "listados": {
+    "status": 200,
+    "size": 74427
+  },
+  "detalle": {
+    "status": 200,
+    "size": 54233
+  },
+  "carrito": {
+    "status": 200,
+    "size": 40441
+  },
+  "success": {
+    "status": 200,
+    "size": 40576
+  },
+  "pending": {
+    "status": 200,
+    "size": 40447
+  },
+  "failure": {
+    "status": 200,
+    "size": 40465
+  },
+  "contentChecks": {
+    "homeHasProductText": true,
+    "detalleHasAgregarCarrito": true,
+    "carritoHasResumen": true
+  }
+}

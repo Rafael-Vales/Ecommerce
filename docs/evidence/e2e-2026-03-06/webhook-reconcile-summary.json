@@ -1,0 +1,33 @@
+{
+  "reconcileBeforeStatus": 200,
+  "webhook1Status": 500,
+  "webhook2Status": 200,
+  "reconcileAfterStatus": 200,
+  "webhook1Body": {
+    "error": "webhook processing failed"
+  },
+  "webhook2Body": {
+    "received": true,
+    "duplicate": true
+  },
+  "reconcileBeforeBody": {
+    "ok": true,
+    "scanned": 3,
+    "processed": 3,
+    "completed": 0,
+    "retried": 3,
+    "dead": 0,
+    "skipped": 0,
+    "errors": 0
+  },
+  "reconcileAfterBody": {
+    "ok": true,
+    "scanned": 0,
+    "processed": 0,
+    "completed": 0,
+    "retried": 0,
+    "dead": 0,
+    "skipped": 0,
+    "errors": 0
+  }
+}

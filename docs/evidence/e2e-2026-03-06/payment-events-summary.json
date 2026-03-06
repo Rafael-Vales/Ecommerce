@@ -1,0 +1,28 @@
+{
+  "evt-e2e-dup-001": [
+    {
+      "id": "cmmf43r1f0001y8kdiyq5u0hq",
+      "rawEventId": "evt-e2e-dup-001",
+      "eventType": "payment.updated",
+      "paymentReference": "mp-pay-e2e-001",
+      "signatureValid": true,
+      "processedAt": null,
+      "orderId": null,
+      "paymentId": null,
+      "createdAt": "2026-03-06T16:31:47.619Z"
+    }
+  ],
+  "evt-e2e-par-001": [
+    {
+      "id": "cmmf44yxl0005y8kd3nrv35gb",
+      "rawEventId": "evt-e2e-par-001",
+      "eventType": "payment.updated",
+      "paymentReference": "mp-pay-e2e-par-001",
+      "signatureValid": true,
+      "processedAt": null,
+      "orderId": null,
+      "paymentId": null,
+      "createdAt": "2026-03-06T16:32:44.506Z"
+    }
+  ]
+}

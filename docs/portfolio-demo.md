@@ -2,7 +2,7 @@
 
 Ejecutar `npm run dev:demo` y abrir http://localhost:3012. El acceso de prueba está en http://localhost:3012/login.
 
-El modo se activa solamente con `NEXT_PUBLIC_DEMO_MODE=true`. Para desplegar una demo se debe definir esa variable en el entorno de build y runtime. Sin ella se conserva el catálogo de base de datos.
+Esta edición de portfolio usa siempre el catálogo local y la compra simulada. Los productos están en `src/data/demo-catalog.ts` y las fotos en `public/img/products/`; ambos se incluyen en el despliegue. No hace falta configurar `NEXT_PUBLIC_DEMO_MODE` en Vercel. Para restaurar una tienda real se debe recuperar la infraestructura y cambiar explícitamente esta configuración.
 
 El catálogo muestra 16 productos con las fotos proporcionadas en FOTO PRODUCTO. Los nombres corresponden a los envases. Los precios son ejemplos y no representan inventario ni precios actuales. Las presentaciones cuyo peso no es legible se indican como “Bolsa”.
 

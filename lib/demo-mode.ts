@@ -1,2 +1,3 @@
-// Explicit opt-in: database failures never silently switch to sample data.
-export const DEMO_MODE = process.env.NEXT_PUBLIC_DEMO_MODE === "true";
+// This portfolio edition always uses the bundled catalog and simulated checkout.
+// Keep this shared by server and client so deployed behavior matches the local demo.
+export const DEMO_MODE = true;

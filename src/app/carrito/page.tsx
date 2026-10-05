@@ -27,7 +27,9 @@ import type { Product } from "@/src/types/product";
 export default function CarritoPage() {
 	const [demoComplete, setDemoComplete] = useState(false);
 	const [step, setStep] = useState<1 | 2 | 3 | 4>(1);
-	const [recommendedProducts, setRecommendedProducts] = useState<Product[]>([]);
+	const [recommendedProducts, setRecommendedProducts] = useState<Product[]>(
+		[],
+	);
 	const [paymentMethod, setPaymentMethod] = useState<
 		"MERCADO_PAGO" | "CASH_PICKUP"
 	>("MERCADO_PAGO");
@@ -35,7 +37,7 @@ export default function CarritoPage() {
 	const titles = {
 		1: "Tu Carrito",
 		2: "Información personal",
-		3: "Envio",
+		3: "Envio.",
 		4: "Pago",
 	};
 
@@ -57,7 +59,7 @@ export default function CarritoPage() {
 
 	async function handleCheckout(
 		cartItems: any[],
-		selectedPaymentMethod: "MERCADO_PAGO" | "CASH_PICKUP"
+		selectedPaymentMethod: "MERCADO_PAGO" | "CASH_PICKUP",
 	) {
 		try {
 			if (cartItems.length === 0) {
@@ -66,11 +68,11 @@ export default function CarritoPage() {
 			}
 
 			if (DEMO_MODE) {
-                setDemoComplete(true);
-                useCartStore.getState().clear();
-                return;
-            }
-            const idempotencyKey =
+				setDemoComplete(true);
+				useCartStore.getState().clear();
+				return;
+			}
+			const idempotencyKey =
 				typeof crypto !== "undefined" && "randomUUID" in crypto
 					? crypto.randomUUID()
 					: `${Date.now()}-${Math.random()}`;
@@ -81,57 +83,73 @@ export default function CarritoPage() {
 					"Content-Type": "application/json",
 					"Idempotency-Key": idempotencyKey,
 				},
-					body: JSON.stringify({
-						customer: {
-							email: "test_user_351831898137148704@testuser.com",
-						},
-						paymentMethod: selectedPaymentMethod,
-						items: cartItems.map((item) => ({
-							productId: item.productId,
-							variantId: item.id,
-							quantity: item.quantity,
+				body: JSON.stringify({
+					customer: {
+						email: "test_user_351831898137148704@testuser.com",
+					},
+					paymentMethod: selectedPaymentMethod,
+					items: cartItems.map((item) => ({
+						productId: item.productId,
+						variantId: item.id,
+						quantity: item.quantity,
 					})),
 				}),
 			});
 
 			const data = await res.json();
 
-				if (!res.ok) {
-					throw new Error(data?.message || "No se pudo generar la preferencia");
-				}
-
-				if (selectedPaymentMethod === "CASH_PICKUP") {
-					const orderId = data?.orderId;
-
-					if (!orderId) {
-						throw new Error("No se pudo confirmar el pedido en efectivo");
-					}
-
-					window.location.href = `/pago/cash?orderId=${encodeURIComponent(
-						orderId
-					)}`;
-					return;
-				}
-
-				const checkoutUrl = data?.payment?.checkoutUrl;
-
-				if (!checkoutUrl) {
-					throw new Error("No se pudo generar la preferencia");
-				}
-
-				window.location.href = checkoutUrl;
-			} catch (error) {
-				console.error(error);
-				toast.error("Error al iniciar el checkout");
+			if (!res.ok) {
+				throw new Error(
+					data?.message || "No se pudo generar la preferencia",
+				);
 			}
-		}
 
-  if (demoComplete) return <section className="max-w-2xl mx-auto px-6 py-24 text-center">
-    <p className="text-sm text-[#F32947] mb-3">DEMO COMPLETADA</p>
-    <h1 className="text-3xl font-bold text-[#0B1D4C]">Así de simple sería tu compra.</h1>
-    <p className="my-6 text-slate-600">Recorriste la experiencia de compra. No se generó un pedido real ni se realizó ningún cobro.</p>
-    <Link href="/" className="inline-block rounded-full bg-[#0B1D4C] text-white px-6 py-3">Volver a la tienda</Link>
-  </section>;
+			if (selectedPaymentMethod === "CASH_PICKUP") {
+				const orderId = data?.orderId;
+
+				if (!orderId) {
+					throw new Error(
+						"No se pudo confirmar el pedido en efectivo",
+					);
+				}
+
+				window.location.href = `/pago/cash?orderId=${encodeURIComponent(
+					orderId,
+				)}`;
+				return;
+			}
+
+			const checkoutUrl = data?.payment?.checkoutUrl;
+
+			if (!checkoutUrl) {
+				throw new Error("No se pudo generar la preferencia");
+			}
+
+			window.location.href = checkoutUrl;
+		} catch (error) {
+			console.error(error);
+			toast.error("Error al iniciar el checkout");
+		}
+	}
+
+	if (demoComplete)
+		return (
+			<section className="max-w-2xl mx-auto px-6 py-24 text-center">
+				<p className="text-sm text-[#F32947] mb-3">DEMO COMPLETADA</p>
+				<h1 className="text-3xl font-bold text-[#0B1D4C]">
+					Así de simple sería tu compra.
+				</h1>
+				<p className="my-6 text-slate-600">
+					Recorriste la experiencia de compra. No se generó un pedido
+					real ni se realizó ningún cobro.
+				</p>
+				<Link
+					href="/"
+					className="inline-block rounded-full bg-[#0B1D4C] text-white px-6 py-3">
+					Volver a la tienda
+				</Link>
+			</section>
+		);
 
 	return (
 		<div className="min-h-screen bg-gray-50 py-10">
@@ -162,15 +180,33 @@ export default function CarritoPage() {
 							{titles[step]}
 						</h1>
 
-						{step === 1 && (cartItems.length ? <Step1Cart items={cartItems} /> : <div className="rounded-2xl bg-white border p-10 text-center"><h2 className="text-xl font-semibold">Tu carrito está vacío</h2><p className="my-4 text-gray-500">Encontrá algo para tu mascota y agregalo a tu carrito.</p><Link href="/" className="text-[#F32947] underline">Explorar productos</Link></div>)}
+						{step === 1 &&
+							(cartItems.length ? (
+								<Step1Cart items={cartItems} />
+							) : (
+								<div className="rounded-2xl bg-white border p-10 text-center">
+									<h2 className="text-xl font-semibold">
+										Tu carrito está vacío
+									</h2>
+									<p className="my-4 text-gray-500">
+										Encontrá algo para tu mascota y agregalo
+										a tu carrito.
+									</p>
+									<Link
+										href="/"
+										className="text-[#F32947] underline">
+										Explorar productos
+									</Link>
+								</div>
+							))}
 						{step === 2 && <Step2Info />}
 						{step === 3 && <Step3Shipping />}
-							{step === 4 && (
-								<Step4Payment
-									paymentMethod={paymentMethod}
-									onChange={setPaymentMethod}
-								/>
-							)}
+						{step === 4 && (
+							<Step4Payment
+								paymentMethod={paymentMethod}
+								onChange={setPaymentMethod}
+							/>
+						)}
 
 						{step > 1 && (
 							<div className="flex justify-end pt-4">
@@ -178,24 +214,24 @@ export default function CarritoPage() {
 									className="bg-[#0B1D4C] hover:bg-[#152c69] text-white h-12 px-8 rounded-lg w-full sm:w-auto"
 									onClick={() =>
 										step < 4
-												? setStep(
-														(prev) => (prev + 1) as any
-												  )
-												: handleCheckout(
-														cartItems,
-														paymentMethod
-												  )
-										}>
-										{step === 4 ? (
-											DEMO_MODE ? "Completar demostración" : paymentMethod === "CASH_PICKUP" ? (
-												"Confirmar Pedido"
-											) : (
-												"Pagar con Mercado Pago"
-											)
-										) : step === 3
+											? setStep(
+													(prev) => (prev + 1) as any,
+												)
+											: handleCheckout(
+													cartItems,
+													paymentMethod,
+												)
+									}>
+									{step === 4
+										? DEMO_MODE
+											? "Completar demostración"
+											: paymentMethod === "CASH_PICKUP"
+												? "Confirmar Pedido"
+												: "Pagar con Mercado Pago"
+										: step === 3
 											? "Pagar"
 											: "Ir al Envio"}
-									</Button>
+								</Button>
 							</div>
 						)}
 					</div>
@@ -469,7 +505,9 @@ function Step4Payment({
 							Mercado Pago
 						</p>
 						<p className="text-sm text-gray-600">
-							{DEMO_MODE ? "Opción de ejemplo. No se abre Mercado Pago ni se realizan cobros." : "Pagás online y te redirigimos al checkout seguro."}
+							{DEMO_MODE
+								? "Opción de ejemplo. No se abre Mercado Pago ni se realizan cobros."
+								: "Pagás online y te redirigimos al checkout seguro."}
 						</p>
 					</div>
 				</div>
@@ -490,7 +528,9 @@ function Step4Payment({
 							Efectivo (retiro en local)
 						</p>
 						<p className="text-sm text-gray-600">
-							{DEMO_MODE ? "Opción de ejemplo. No se envía un pedido al local." : "Confirmás el pedido ahora y abonás en el local al retirar."}
+							{DEMO_MODE
+								? "Opción de ejemplo. No se envía un pedido al local."
+								: "Confirmás el pedido ahora y abonás en el local al retirar."}
 						</p>
 						<div className="mt-1 inline-flex items-center gap-1 text-xs text-gray-500">
 							<Store className="w-3.5 h-3.5" />
@@ -508,7 +548,7 @@ function OrderSummary({ step, onNext }: { step: number; onNext: () => void }) {
 
 	const subtotal = items.reduce(
 		(acc, item) => acc + item.price * item.quantity,
-		0
+		0,
 	);
 
 	return (

@@ -1,6 +1,6 @@
 # Demo para portfolio
 
-Ejecutar `npm run dev:demo` y abrir http://localhost:3012.
+Ejecutar `npm run dev:demo` y abrir http://localhost:3012. El acceso de prueba está en http://localhost:3012/login.
 
 El modo se activa solamente con `NEXT_PUBLIC_DEMO_MODE=true`. Para desplegar una demo se debe definir esa variable en el entorno de build y runtime. Sin ella se conserva el catálogo de base de datos.
 

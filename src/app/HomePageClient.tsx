@@ -57,7 +57,7 @@ export default function HomePageClient({
 								<div className="scale-[1.1]">
 									<CategoryCard
 										title="ALIMENTOS SECOS"
-										image="/img/Gato.png"
+										image="/img/categories/secos.svg"
 										count={84}
 										isActive={selectedCategory === "secos"}
 										onClick={() =>
@@ -71,8 +71,8 @@ export default function HomePageClient({
 							<CarouselItem className="basis-full flex justify-center snap-center">
 								<div className="scale-[1.1]">
 									<CategoryCard
-										title="ALIMENTOS HUMEDOS"
-										image="/img/Beagle.png"
+										title="ALIMENTOS HÚMEDOS"
+										image="/img/categories/humedos.svg"
 										count={16}
 										isActive={selectedCategory === "humedos"}
 										onClick={() =>
@@ -92,7 +92,7 @@ export default function HomePageClient({
 				<div className="hidden sm:grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10">
 					<CategoryCard
 						title="ALIMENTOS SECOS"
-						image="/img/img1.png"
+						image="/img/categories/secos.svg"
 						count={84}
 						isActive={selectedCategory === "secos"}
 						onClick={() =>
@@ -102,8 +102,8 @@ export default function HomePageClient({
 						}
 					/>
 					<CategoryCard
-						title="ALIMENTOS HUMEDOS"
-						image="/img/img2.png"
+						title="ALIMENTOS HÚMEDOS"
+						image="/img/categories/humedos.svg"
 						count={16}
 						isActive={selectedCategory === "humedos"}
 						onClick={() =>
@@ -114,7 +114,7 @@ export default function HomePageClient({
 					/>
 					<CategoryCard
 						title="ALIMENTOS ESPECIALES"
-						image="/img/img3.png"
+						image="/img/categories/especiales.svg"
 						count={42}
 						isActive={selectedCategory === "especiales"}
 						onClick={() =>

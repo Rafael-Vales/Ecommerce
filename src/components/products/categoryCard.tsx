@@ -1,4 +1,3 @@
-import Link from "next/link";
 import Image from "next/image";
 
 interface CategoryCardProps {
@@ -12,7 +11,6 @@ interface CategoryCardProps {
 export default function CategoryCard({
 	title,
 	image,
-	count,
 	onClick,
 	isActive = false,
 }: CategoryCardProps) {
@@ -31,6 +29,7 @@ export default function CategoryCard({
 					src={image}
 					alt={title}
 					fill
+					sizes="(max-width: 640px) 90vw, (max-width: 1024px) 50vw, 384px"
 					className="object-cover object-center group-hover:scale-105 transition-transform duration-300"
 				/>
 			</div>

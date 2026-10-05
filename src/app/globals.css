@@ -143,3 +143,5 @@
   top: 0;
   left: 100%;
 }
+/* Prevent decorative/carousel overflow from widening the viewport. */
+html, body { max-width: 100%; overflow-x: clip; }

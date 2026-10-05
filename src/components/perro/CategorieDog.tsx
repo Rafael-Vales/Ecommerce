@@ -71,7 +71,7 @@ export default function DogCategories({
 						</p>
 
 						<p className="text-[12px] text-gray-500">
-							{cat.count} products
+							Ver productos
 						</p>
 
 						<div className="w-full flex justify-end mt-2">

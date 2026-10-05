@@ -1,5 +1,6 @@
 "use client";
 
+import { DEMO_MODE } from "@/lib/demo-mode";
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
@@ -24,6 +25,7 @@ import { getProducts } from "@/lib/products";
 import type { Product } from "@/src/types/product";
 
 export default function CarritoPage() {
+	const [demoComplete, setDemoComplete] = useState(false);
 	const [step, setStep] = useState<1 | 2 | 3 | 4>(1);
 	const [recommendedProducts, setRecommendedProducts] = useState<Product[]>([]);
 	const [paymentMethod, setPaymentMethod] = useState<
@@ -32,7 +34,7 @@ export default function CarritoPage() {
 
 	const titles = {
 		1: "Tu Carrito",
-		2: "Informacion Personal",
+		2: "Información personal",
 		3: "Envio",
 		4: "Pago",
 	};
@@ -63,7 +65,12 @@ export default function CarritoPage() {
 				return;
 			}
 
-			const idempotencyKey =
+			if (DEMO_MODE) {
+                setDemoComplete(true);
+                useCartStore.getState().clear();
+                return;
+            }
+            const idempotencyKey =
 				typeof crypto !== "undefined" && "randomUUID" in crypto
 					? crypto.randomUUID()
 					: `${Date.now()}-${Math.random()}`;
@@ -119,6 +126,13 @@ export default function CarritoPage() {
 			}
 		}
 
+  if (demoComplete) return <section className="max-w-2xl mx-auto px-6 py-24 text-center">
+    <p className="text-sm text-[#F32947] mb-3">DEMO COMPLETADA</p>
+    <h1 className="text-3xl font-bold text-[#0B1D4C]">Así de simple sería tu compra.</h1>
+    <p className="my-6 text-slate-600">Recorriste la experiencia de compra. No se generó un pedido real ni se realizó ningún cobro.</p>
+    <Link href="/" className="inline-block rounded-full bg-[#0B1D4C] text-white px-6 py-3">Volver a la tienda</Link>
+  </section>;
+
 	return (
 		<div className="min-h-screen bg-gray-50 py-10">
 			<div className="max-w-[1300px] mx-auto px-6">
@@ -148,7 +162,7 @@ export default function CarritoPage() {
 							{titles[step]}
 						</h1>
 
-						{step === 1 && <Step1Cart items={cartItems} />}
+						{step === 1 && (cartItems.length ? <Step1Cart items={cartItems} /> : <div className="rounded-2xl bg-white border p-10 text-center"><h2 className="text-xl font-semibold">Tu carrito está vacío</h2><p className="my-4 text-gray-500">Encontrá algo para tu mascota y agregalo a tu carrito.</p><Link href="/" className="text-[#F32947] underline">Explorar productos</Link></div>)}
 						{step === 2 && <Step2Info />}
 						{step === 3 && <Step3Shipping />}
 							{step === 4 && (
@@ -173,7 +187,7 @@ export default function CarritoPage() {
 												  )
 										}>
 										{step === 4 ? (
-											paymentMethod === "CASH_PICKUP" ? (
+											DEMO_MODE ? "Completar demostración" : paymentMethod === "CASH_PICKUP" ? (
 												"Confirmar Pedido"
 											) : (
 												"Pagar con Mercado Pago"
@@ -455,7 +469,7 @@ function Step4Payment({
 							Mercado Pago
 						</p>
 						<p className="text-sm text-gray-600">
-							Pagás online y te redirigimos al checkout seguro.
+							{DEMO_MODE ? "Opción de ejemplo. No se abre Mercado Pago ni se realizan cobros." : "Pagás online y te redirigimos al checkout seguro."}
 						</p>
 					</div>
 				</div>
@@ -476,7 +490,7 @@ function Step4Payment({
 							Efectivo (retiro en local)
 						</p>
 						<p className="text-sm text-gray-600">
-							Confirmás el pedido ahora y abonás en el local al retirar.
+							{DEMO_MODE ? "Opción de ejemplo. No se envía un pedido al local." : "Confirmás el pedido ahora y abonás en el local al retirar."}
 						</p>
 						<div className="mt-1 inline-flex items-center gap-1 text-xs text-gray-500">
 							<Store className="w-3.5 h-3.5" />
@@ -557,6 +571,7 @@ function OrderSummary({ step, onNext }: { step: number; onNext: () => void }) {
 
 			{step === 1 && (
 				<Button
+					disabled={items.length === 0}
 					onClick={onNext}
 					className="w-full bg-[#0B1D4C] hover:bg-[#152c69] text-white font-bold h-12 rounded-lg shadow-lg shadow-blue-900/20">
 					FINALIZAR COMPRA

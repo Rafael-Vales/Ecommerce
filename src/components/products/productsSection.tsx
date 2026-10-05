@@ -74,16 +74,7 @@ export default function ProductsSection({
 
 	const ITEMS_PER_PAGE = 12;
 
-	const brands = [
-		"Pedigree",
-		"Royal Canin",
-		"Whiskas",
-		"Vitalcan",
-		"Vital-Pet",
-		"Eukanuba",
-		"Purina",
-		"Advance",
-	];
+	const brands = [...new Set(allProducts.map((product) => product.brand))].sort((a, b) => a.localeCompare(b, "es"));
 
 	const tags = [
 		"comida perro",
@@ -339,11 +330,12 @@ export default function ProductsSection({
 						</select>
 					</div>
 
-					{hasSearch && filtered.length === 0 ? (
+					{filtered.length === 0 ? (
 						<div className="space-y-6">
 							<p className="text-gray-700 font-semibold">
-								El resultado de la búsqueda de "{searchQuery}"
-								{" "}no fue encontrado.
+								{hasSearch
+									? `No encontramos productos para “${searchQuery}”.`
+									: "No hay productos que coincidan con estos filtros."}
 							</p>
 
 							{fallbackProducts.length > 0 && (
@@ -398,7 +390,7 @@ export default function ProductsSection({
 						))}
 
 						<button
-							disabled={page === totalPages}
+							disabled={page >= totalPages}
 							onClick={nextPage}
 							className="px-3 py-1 border rounded-full disabled:opacity-40">
 							Siguiente →

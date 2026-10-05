@@ -1,4 +1,6 @@
 import "server-only";
+import { DEMO_MODE } from "@/lib/demo-mode";
+import { demoProducts, filterDemoProducts } from "@/src/data/demo-catalog";
 
 import type { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
@@ -95,6 +97,7 @@ export async function getProducts(
   tenantSlug: string,
   filters: CatalogFilters = {}
 ): Promise<Product[]> {
+  if (DEMO_MODE) return normalizeTenantSlug(tenantSlug) === DEFAULT_TENANT_SLUG ? filterDemoProducts(filters) : [];
   try {
     const where: Prisma.ProductWhereInput = {
       tenant: { slug: normalizeTenantSlug(tenantSlug) },
@@ -138,6 +141,7 @@ export async function getProductById(
   tenantSlug: string,
   productId: string
 ): Promise<Product | null> {
+  if (DEMO_MODE) return normalizeTenantSlug(tenantSlug) === DEFAULT_TENANT_SLUG ? demoProducts.find(p => p.id === productId) ?? null : null;
   if (!productId) {
     return null;
   }

@@ -39,7 +39,7 @@ export default function CategoryCard({
 			<div className="bg-[#F5F6F7] px-5 py-4 flex justify-between items-center">
 				<div>
 					<p className="text-lg font-semibold text-black">{title}</p>
-					<p className="text-sm text-gray-600">{count} productos</p>
+					<p className="text-sm text-gray-600">Explorar categoría</p>
 				</div>
 
 				<div

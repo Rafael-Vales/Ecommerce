@@ -1,3 +1,4 @@
+import { DEMO_MODE } from "@/lib/demo-mode";
 import { NextResponse } from "next/server";
 
 import { checkoutRequestSchema } from "@/src/server/checkout/schema";
@@ -36,6 +37,7 @@ function formatZodErrors(errors: string[]) {
 }
 
 export async function handleCheckoutPost(request: Request) {
+  if (DEMO_MODE) return NextResponse.json({ message: "Demo: los pedidos y cobros reales están deshabilitados." }, { status: 409 });
   const requestIp = getRequestIp(request);
 
   if (!consumeRateLimit(`checkout:${requestIp}`, 30, 60_000)) {
